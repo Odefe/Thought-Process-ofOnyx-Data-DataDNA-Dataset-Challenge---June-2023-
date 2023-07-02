@@ -1,0 +1,62 @@
+This is the website where challenges are posted every month: https://onyxdata.co.uk/data-dna-dataset-challenge/
+This was my final dashboard: https://www.linkedin.com/posts/odefe-oberabor-a866a2226_datadna-activity-7076690329420087296-QQzT?utm_source=share&utm_medium=member_desktop
+
+Below is my thought process throughput for analyzing the data:
+
+Created Table from Excel Sheet.
+Noticed 2028 in Cleanup date...unsure if it was meant to be 2018 0r 2008. Deleted so it doesn't skew results.
+Another date was 0218-04-20... seems like a typographical error. Changed it to 2018
+
+Imported The Excel File to SQL Management Studio.
+
+After importing I had to change some datatypes
+Changed all data types with integers from float to integer. Columns include ID, Adults, Children and any column involving Trash Data
+	
+Changed ID datatype from float to INT
+Changed Zone datatype from nvarchar(255) to nvarchar(80)
+Changed State datatype from nvarchar(255) to nvarchar(50)
+Changed Country datatype from nvarchar(255) to nvarchar(14)
+Changed GPS_Lat datatype from float to DECIMAL(18,8)
+Changed GPS_Long datatype from float to DECIMAL(11,8)
+Changed Cleanup Type datatype from [nvarchar](255) to [nvarchar](48)
+Changed Cleanup Date datatype from date time to date
+Normalized the data creating tables for groups, location & clean up events and trash collected.
+
+Explored the Trash Data
+Total Number of Pounds: 11780214.60 
+Total Number of Pounds per State: Top 3 states: California, Pensylvania & Texas.
+Total Number of Pounds per Zone: Top 3 zones: San Diego County, CA, USA (476912.56) & Hills borough County, FL, USA (445976.84)
+
+Next I wanted to calculate the average Trash Per Cleanup:
+I realized a lot of pounds have 0 as their weight, this may not necessarily be an inaccuracy as sweet wrappers and straws I recon don't weigh much.
+But after more scrutiny of the data a lot of rows with '0pounds' had walked a lot of miles and picked up a lot of trash and still had 0 pounds.
+My conclusion:
+Some Pickup days actually had 0 pounds at the end of the day.
+Some didn't measure their weight.
+Some were inaccurate entries.
+Due to this uncertainty around the pounds. I decided to calculate the average only for clean up days when the pounds was more than 0.
+
+
+I calculated the most common clean up type
+I calculated the most active groups
+I calculated the most common type of trash.
+
+
+Copied the results to excel for visualization
+
+Created multiple connections as the spreadsheets mostly didn't have similar columns.
+In the data, Tableau didn't accept the location format they wanted Alabama instead of Alabama, USA, etc.
+So i used the LEFT Function in excel to separate the ", USA" from each location.
+The Formula I Used: =LEFT(A2, FIND(",", A2, 1)-1).
+It worked in the excel file but didn't reflect on my tableau, I guess because I was already using it as a data source, not sure.
+Decided to create a calculated field using SPLIT.
+SPLIT([State], ",", 1)
+Changed the datatype to state.
+
+Had to do the same for Zones.
+But slightly different formula.
+TRIM(SPLIT([zone], 'County', 1))
+Changed the datatype to county
+I wanted to visualize Zones on the map but realized the zones were too small to show well
+especially as the zones are all across the united states.
+I decided to show it on a tree map.
